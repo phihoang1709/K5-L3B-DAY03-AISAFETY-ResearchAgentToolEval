@@ -111,6 +111,29 @@ tools:
           {type: string, default: "", description: "Optional heading for the digest."}
       required: [items, template]
 
+  - name: dedupe
+    description: >-
+      Remove duplicate items from a list of research results while preserving
+      the first occurrence and original order. Use only when the user provides
+      or the agent already has items to clean. Do not use it to search, fetch,
+      summarize, or invent missing content.
+    parameters:
+      type: object
+      properties:
+        items:
+          type: array
+          default: []
+          description: "Existing research items to deduplicate; each item should be an object with a URL or title when available."
+          items:
+            type: object
+            properties:
+              title: {type: string}
+              url: {type: string}
+              source: {type: string}
+              summary: {type: string}
+              section: {type: string}
+      required: [items]
+
   # ---------------- Existing action and knowledge tools ----------------
   - name: send
     description: >-

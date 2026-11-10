@@ -77,15 +77,15 @@ Tool có sẵn (`send`, `policy`, `papers`, `paper_text`) không tự được b
 - [x] `v1`, `v2`, `v3`: mỗi version **một** giả thuyết, metric trước/sau trong `version_log.csv`
 
 **Tool mới (CP3)**
-- [ ] `tools/<tên>/tool.py` + `TOOL.md` (frontmatter đúng contract trong `tools/README.md`)
-- [ ] Đăng ký trong `tools/__init__.py` (`TOOL_FUNCTIONS`) và `artifacts/tools.yaml`
-- [ ] Unit test cho tool mới trong `tests/test_tools_todo.py` (≥ 3 test)
-- [ ] Ít nhất 1 eval case trong `data/eval_group.json` kiểm tra model có route tới tool mới đúng lúc
+- [x] `tools/<tên>/tool.py` + `TOOL.md` (frontmatter đúng contract trong `tools/README.md`)
+- [x] Đăng ký trong `tools/__init__.py` (`TOOL_FUNCTIONS`) và `artifacts/tools.yaml`
+- [x] Unit test cho tool mới trong `tests/test_tools_todo.py` (≥ 3 test)
+- [x] Ít nhất 1 eval case trong `data/eval_group.json` kiểm tra model có route tới tool mới đúng lúc
 
 **Testing (CP3, CP4)**
-- [ ] `data/eval_group.json`: case cho model (routing / args / boundary), xem Step 4
-- [ ] `tests/test_tools_todo.py`: unit test cho code của tool, xem Step 4b
-- [ ] `pytest`: 0 failed; 3 test của tool mới không còn `skipped` (stub của tool có sẵn được phép còn skip)
+- [x] `data/eval_group.json`: case cho model (routing / args / boundary), xem Step 4
+- [x] `tests/test_tools_todo.py`: unit test cho code của tool, xem Step 4b
+- [x] `pytest`: 0 failed; 3 test của tool mới không còn `skipped` (stub của tool có sẵn được phép còn skip)
 
 **Demo & báo cáo (CP5)**
 - [ ] UI chạy được + link dùng thử

@@ -3,5 +3,116 @@
   "dataset_role": "group",
   "description": "Case do NHÓM tự viết thêm để cover thêm trường hợp. Mỗi case cần: id, phase='B', query HOẶC turns, failure_type (thuộc allowed_failure_types), và expect (tool_calls[...] hoặc no_tool=true). Nên kèm metadata.what_it_tests.",
   "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "wrong_boundary", "unnecessary_tool", "out_of_scope", "missing_info"],
-  "cases": []
+  "cases": [
+    {
+      "id": "G01_news_today",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tin tức AI hôm nay có gì nổi bật?",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "AI", "topic": "news", "timeframe": "day"}}]},
+      "metadata": {"what_it_tests": "News routing with core query normalization and today's timeframe."}
+    },
+    {
+      "id": "G02_top_social_search",
+      "phase": "B",
+      "suite": "group",
+      "query": "Cho mình các tweet phổ biến (top) nhất về GPT-5.",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "social_search", "args": {"query": "GPT-5", "search_type": "Top"}}]},
+      "metadata": {"what_it_tests": "Topic social search and Top versus Latest argument selection."}
+    },
+    {
+      "id": "G03_explicit_url_fetch",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tóm tắt bài viết này: https://openai.com/research/",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://openai.com/research/"}}]},
+      "metadata": {"what_it_tests": "A supplied URL routes directly to fetch instead of web lookup."}
+    },
+    {
+      "id": "G04_missing_account_clarify",
+      "phase": "B",
+      "suite": "group",
+      "query": "Tóm tắt 5 tweet mới nhất giúp mình.",
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"what_it_tests": "Missing account must trigger clarification instead of guessing a handle."}
+    },
+    {
+      "id": "G05_dedupe_existing_results",
+      "phase": "B",
+      "suite": "group",
+      "query": "Hãy loại bỏ các bài trùng trong danh sách kết quả sau, giữ lại bản đầu tiên: [{\"title\":\"AI report\",\"url\":\"https://example.com/ai\"},{\"title\":\"AI report copy\",\"url\":\"https://example.com/ai/\"},{\"title\":\"Robotics\",\"url\":\"https://example.com/robotics\"}]",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "dedupe", "args": {}}]},
+      "metadata": {"what_it_tests": "New-tool routing for deduplicating an existing result list without web retrieval."}
+    },
+    {
+      "id": "G06_multiturn_account_fill",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tóm tắt 5 tweet mới nhất giúp mình."},
+        {"role": "user", "content": "Của Elon Musk nhé."},
+        {"role": "user", "content": "Giữ đúng 5 tweet."}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "timeline", "args": {"screenname": "elonmusk", "limit": 5}}]},
+      "metadata": {"what_it_tests": "Multi-turn carryover of limit and name-to-handle mapping."}
+    },
+    {
+      "id": "G07_multiturn_url_fill",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tóm tắt bài này giúp mình."},
+        {"role": "user", "content": "Đây là link: https://anthropic.com/news/claude"},
+        {"role": "user", "content": "Chỉ đọc đúng link đó thôi."}
+      ],
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "fetch", "args": {"url": "https://anthropic.com/news/claude"}}]},
+      "metadata": {"what_it_tests": "Multi-turn URL clarification followed by exact fetch routing."}
+    },
+    {
+      "id": "G08_multiturn_news_timeframe",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tin AI hôm nay có gì?"},
+        {"role": "user", "content": "Còn về robotics thì sao?"},
+        {"role": "user", "content": "Chỉ tìm robotics thôi, vẫn là tin hôm nay."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "robotics", "topic": "news", "timeframe": "day"}}]},
+      "metadata": {"what_it_tests": "Carry news topic and day timeframe while replacing the query."}
+    },
+    {
+      "id": "G09_multiturn_switch_to_web",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Mọi người nói gì về OpenAI trên Twitter?"},
+        {"role": "user", "content": "Bỏ Twitter, chuyển sang tìm tin tức trên web đi."},
+        {"role": "user", "content": "Giữ chủ đề OpenAI."}
+      ],
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "lookup", "args": {"query": "OpenAI", "topic": "news"}}]},
+      "metadata": {"what_it_tests": "Explicit multi-turn switch from social search to web news."}
+    },
+    {
+      "id": "G10_multiturn_send_confirmation",
+      "phase": "B",
+      "suite": "group",
+      "turns": [
+        {"role": "user", "content": "Tìm 3 tin AI hôm nay."},
+        {"role": "user", "content": "Đăng bản tin này lên Telegram."},
+        {"role": "user", "content": "Tôi xác nhận gửi nội dung đó."}
+      ],
+      "failure_type": "wrong_boundary",
+      "expect": {"tool_calls": [{"name": "send", "args": {"confirmed": true}}]},
+      "metadata": {"what_it_tests": "Send is allowed only after an explicit confirmation turn."}
+    }
+  ]
 }

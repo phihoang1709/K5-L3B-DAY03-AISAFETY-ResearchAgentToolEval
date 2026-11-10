@@ -16,6 +16,7 @@ from conftest import FakeResponse  # noqa: F401  (you will need it)
 from tools import TOOL_FUNCTIONS  # noqa: F401
 
 TODO = "TODO CP3 (student): implement this test"
+dedupe_tool = TOOL_FUNCTIONS["dedupe"]
 
 
 # ---------------- clarify ----------------
@@ -111,12 +112,28 @@ def test_policy_instruction_like_lines_go_to_untrusted_text() -> None:
 #   3. failure path (missing key, HTTP error, timeout) -> returns error dict, does not raise
 
 def test_my_new_tool_happy_path() -> None:
-    pytest.skip(TODO)
+    items = [
+        {"title": "First", "url": "https://example.com/article/"},
+        {"title": "Duplicate", "url": "https://example.com/article"},
+        {"title": "Second", "url": "https://example.com/second"},
+    ]
+
+    result = dedupe_tool(items=items)
+
+    assert result["items"] == [items[0], items[2]]
+    assert result["item_count"] == 3
+    assert result["unique_count"] == 2
+    assert result["duplicates_removed"] == 1
 
 
 def test_my_new_tool_bad_input_from_model() -> None:
-    pytest.skip(TODO)
+    assert dedupe_tool(items=None)["error"] == "ValueError"
+    assert dedupe_tool(items="not-a-list")["error"] == "ValueError"
+
 
 
 def test_my_new_tool_failure_returns_error_dict() -> None:
-    pytest.skip(TODO)
+    result = dedupe_tool(items=[{"title": "valid"}, "malformed"])
+
+    assert result["error"] == "ValueError"
+    assert "every item must be an object" in result["message"]

@@ -27,6 +27,8 @@ information using the available research tools.
 - Use `papers` to discover arXiv papers and `paper_text` to read a specified
   arXiv paper or identifier.
 - Use `format` only to present items already obtained from another source.
+- Use `dedupe` only to remove duplicate items from an existing result list;
+  never use it to retrieve or invent research content.
 - Multiple independent sources in one request may require multiple tool calls.
   Do not call unrelated tools or repeat a successful call.
 
