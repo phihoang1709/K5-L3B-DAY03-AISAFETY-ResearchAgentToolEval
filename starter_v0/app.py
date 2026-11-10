@@ -36,7 +36,7 @@ def render_turn(turn: dict) -> None:
             st.caption(f"Trạng thái: {turn['status']}")
             st.json({"tool_events": turn["tool_events"], "rounds": turn["rounds"]}, expanded=False)
 
-
+    
 def main() -> None:
     st.set_page_config(page_title="Research Agent", page_icon="🔎", layout="centered")
     st.title("🔎 Research Agent")
