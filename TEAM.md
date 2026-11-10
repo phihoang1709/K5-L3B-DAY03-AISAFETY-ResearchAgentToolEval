@@ -11,8 +11,8 @@
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
 | --: | ------ | ---- | ----- | ------ | ------- |
-|   1 | Nguyễn Phi Hoàng       | 2A202603952     |       |        |         |
-|   2 | Nguyễn Công Hoàn        | 2A202603972     | hoannn1105@gmail.com      | hoan11052004       |         |
+|   1 | Nguyễn Phi Hoàng       | 2A202603952     |       | phihoang1709       |  Trưởng nhóm       |
+|   2 | Nguyễn Công Hoàn        | 2A202603972     |     | hoan11052004       | Thành viên        |
 
 ## Cá nhân
 
