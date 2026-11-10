@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import os
 from typing import Any
+from urllib.parse import quote
 
 import requests
 
@@ -15,6 +16,7 @@ def send_telegram(text: str = "", confirmed: bool = False) -> dict[str, Any]:
             "status": "needs_confirmation",
             "message": "Only send after the user explicitly confirms.",
         }
+    response = None
     try:
         token = os.getenv("TELEGRAM_BOT_TOKEN")
         chat_id = os.getenv("TELEGRAM_CHAT_ID")
@@ -28,5 +30,20 @@ def send_telegram(text: str = "", confirmed: bool = False) -> dict[str, Any]:
         response.raise_for_status()
         return {"tool": "send_telegram", "status": "sent"}
     except Exception as exc:
-        return err("send_telegram", exc)
+        result = err("send_telegram", exc)
+        if isinstance(exc, requests.HTTPError) and response is not None:
+            result["status_code"] = response.status_code
+            result["message"] = f"Telegram HTTP {response.status_code}"
+            try:
+                payload = response.json()
+            except ValueError:
+                payload = None
+            if isinstance(payload, dict) and isinstance(payload.get("description"), str):
+                result["message"] = payload["description"]
+        # Requests exceptions may include the bot token in the URL, even outside the UI.
+        token = os.getenv("TELEGRAM_BOT_TOKEN")
+        if token:
+            for secret in (token, quote(token, safe="")):
+                result["message"] = result["message"].replace(secret, "[REDACTED]")
+        return result
 
