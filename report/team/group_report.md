@@ -5,8 +5,7 @@
 - Tên nhóm: AISAFETY
 - Thành viên và phân công: xem [TEAM.md](../../TEAM.md)
 - Provider/model dùng cho v0–v3: OpenRouter / `openai/gpt-4o-mini`
-- Repo: https://github.com/phihoang1709/K5-L3B-DAY03-AISAFETY-ResearchAgentToolEval
-- Nhánh và commit chốt hiện tại: `main` / `edd3fa5` (`feat: add dedupe tool and group evals`)
+
 
 ## 2. Mục tiêu và cách tiếp cận — PHẦN A: Giới thiệu agent
 
