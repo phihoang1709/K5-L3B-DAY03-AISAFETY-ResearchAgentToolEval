@@ -3,6 +3,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+from collections.abc import Callable
 from datetime import datetime
 from pathlib import Path
 from typing import Any
@@ -16,7 +17,6 @@ from versioning import artifact_version_dict, build_artifact_version
 
 ROOT = Path(__file__).parent
 ARTIFACTS_DIR = ROOT / "artifacts"
-load_lab_env(ROOT)
 
 
 def now_iso() -> str:
@@ -84,13 +84,26 @@ def run_model_tool_loop(
     tools: list[dict[str, Any]],
     model: str | None,
     max_tool_rounds: int,
+    tool_executor: Callable[[ToolCall], dict[str, Any]] | None = None,
+    capture_errors: bool = False,
 ) -> dict[str, Any]:
     working_messages = list(messages)
     rounds: list[dict[str, Any]] = []
     all_tool_events: list[dict[str, Any]] = []
 
     for round_index in range(1, max_tool_rounds + 1):
-        response = provider.complete(working_messages, tools, model=model, temperature=0.0)
+        try:
+            response = provider.complete(working_messages, tools, model=model, temperature=0.0)
+        except Exception as exc:
+            if not capture_errors:
+                raise
+            return {
+                "status": "provider_error",
+                "assistant_text": "Không thể hoàn tất yêu cầu do lỗi provider.",
+                "error": f"{type(exc).__name__}: {exc}",
+                "rounds": rounds,
+                "tool_events": all_tool_events,
+            }
         calls = response.tool_calls
         round_record: dict[str, Any] = {
             "round": round_index,
@@ -112,14 +125,23 @@ def run_model_tool_loop(
         non_clarification_events: list[dict[str, Any]] = []
 
         for call in calls:
-            print(f"🔧 {call.name}({json.dumps(call.args, ensure_ascii=False, sort_keys=True)})")
-            event = execute_tool_call(call)
+            if tool_executor is None:
+                print(f"🔧 {call.name}({json.dumps(call.args, ensure_ascii=False, sort_keys=True)})")
+            event = (tool_executor or execute_tool_call)(call)
             round_record["tool_results"].append(event)
             all_tool_events.append(event)
 
             # Detect the clarification/pause tool by its output flag (rename-proof),
             # not by a hard-coded tool name.
             result = event.get("result", {})
+            if tool_executor is not None and isinstance(result, dict) and result.get("requires_confirmation"):
+                rounds.append(round_record)
+                return {
+                    "status": "waiting_for_confirmation",
+                    "assistant_text": result["question"],
+                    "rounds": rounds,
+                    "tool_events": all_tool_events,
+                }
             if isinstance(result, dict) and result.get("awaiting_user"):
                 question = result.get("question") or call.args.get("question") or "Bạn bổ sung thêm thông tin nhé."
                 rounds.append(round_record)
@@ -150,6 +172,7 @@ def write_transcript(path: Path, transcript: dict[str, Any]) -> None:
 
 
 def main() -> None:
+    load_lab_env(ROOT)
     parser = argparse.ArgumentParser(description="Interactive Research Agent chat with transcript logging.")
     parser.add_argument("--provider", choices=["openrouter", "openai", "anthropic", "gemini", "ollama"], required=True)
     parser.add_argument("--model", default=None)
