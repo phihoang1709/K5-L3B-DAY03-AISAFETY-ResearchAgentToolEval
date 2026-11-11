@@ -6,8 +6,7 @@
 - Lớp: L3B
 - Repo nhóm: `K5-L3B-DAY03-AISAFETY-ResearchAgentToolEval`
 - URL repo: https://github.com/phihoang1709/K5-L3B-DAY03-AISAFETY-ResearchAgentToolEval
-- Nhánh dự kiến nộp: `main`; commit chốt: chưa chốt. Remote được kiểm tra tại `3d7aa2e`; các bổ sung v4 đã được commit trên nhánh hiện tại.
-
+- Nhánh dự kiến nộp: `main`
 ## Thành viên
 
 | STT | Họ tên | MSSV | Email | GitHub | Vai trò |
