@@ -64,8 +64,8 @@ Metric là **case accuracy**. Các run được chấp nhận trong bảng đề
 | v1 | system_prompt.md | Hỏi lại/xác nhận giảm đoán và sai boundary | 65% | 85% (17/20) | [base v1](../../starter_v0/runs/v1_B_base_openrouter_20261110T192815118469.json) |
 | v2 | tools.yaml | Description và convention rõ giảm sai args | 85% | 95% (19/20) | [base v2](../../starter_v0/runs/v2_B_base_openrouter_20261110T193040378126.json) |
 | v3 | system_prompt.md | Bắt buộc yes_no ở lượt gửi đầu tiên | 95% | 100% (20/20) | [base v3](../../starter_v0/runs/v3_B_base_openrouter_20261110T193430837841.json) |
-| v3 sau dedupe | Prompt + tools | Route dedupe trên dữ liệu đã có | — | 100% (10/10 group) | [group lịch sử](../../starter_v0/runs/v3_B_group_openrouter_20261110T221819343346.json) |
-| v4 | Prompt + tools, 3 tool mới | Mở rộng offline vẫn giữ routing base | 100% base | 100% (20/20) | [base v4](../../starter_v0/runs/v4_B_base_openrouter_20261110T231223951219.json) |
+| v3 sau dedupe |  tools | Route dedupe trên dữ liệu đã có | — | 100% (10/10 group) | [group lịch sử](../../starter_v0/runs/v3_B_group_openrouter_20261110T221819343346.json) |
+| v4 |  tools, 3 tool mới | Mở rộng offline vẫn giữ routing base | 100% base | 100% (20/20) | [base v4](../../starter_v0/runs/v4_B_base_openrouter_20261110T231223951219.json) |
 | v4 | Cùng artifact, group không đổi | Giữ routing nhóm khi tăng toolset | 100% group | 100% (10/10) | [group v4](../../starter_v0/runs/v4_B_group_openrouter_20261110T231141594846.json) |
 | v4 | Cùng artifact, bonus riêng | Route 4 tool mới và hỏi thiếu mốc ngày | — | 100% (6/6) | [bonus v4](../../starter_v0/runs/v4_B_extension_openrouter_20261110T231122313648.json) |
 
