@@ -28,4 +28,3 @@
 | Hoàn | B1–B3, B5; `dedupe`, `filter_date`, `source_stats` | Báo cáo cá nhân [`2A202603972_NguyenCongHoan.md`](report/team/2A202603972_NguyenCongHoan.md), `dedupe`/group eval tại commit `edd3fa5`, cùng evidence tool/test/run trong `starter_v0/`. Không khẳng định Hoàn là tác giả độc quyền của `edd3fa5`. |
 | Cả hai | Thử UI chéo, rà báo cáo và thông tin cá nhân | Chưa có xác nhận nghiệm thu của người ngoài nhóm |
 
-Commit `0074d7c` (prompt/declaration) và `edd3fa5` (dedupe/group eval) có metadata tác giả `denker9999` thuộc tài khoản GitHub `phihoang1709`; vì vậy bảng chỉ ghi nhận evidence và báo cáo cá nhân, không suy diễn tác giả cá nhân ngoài metadata. Email của cả hai thành viên đã được bổ sung ở trên.
