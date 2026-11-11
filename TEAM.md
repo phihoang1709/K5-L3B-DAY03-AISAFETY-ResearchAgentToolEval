@@ -6,7 +6,7 @@
 - Lớp: L3B
 - Repo nhóm: `K5-L3B-DAY03-AISAFETY-ResearchAgentToolEval`
 - URL repo: https://github.com/phihoang1709/K5-L3B-DAY03-AISAFETY-ResearchAgentToolEval
-- Nhánh dự kiến nộp: `main`; commit chốt: chưa chốt. Remote được kiểm tra ở `edd3fa5`; phần bổ sung v4 hiện chưa commit/push.
+- Nhánh dự kiến nộp: `main`; commit chốt: chưa chốt. Remote được kiểm tra tại `3d7aa2e`; các bổ sung v4 đã được commit trên nhánh hiện tại.
 
 ## Thành viên
 
@@ -24,9 +24,9 @@
 
 | Người chính | Phần việc | Bằng chứng / trạng thái |
 |---|---|---|
-| Hoàng | UI Streamlit, phiên/transcript, xác nhận gửi, tích hợp | Commit `037d5f0`, `app.py`, `ui_session.py`, test UI/session/Telegram |
-| Hoàng | `rank_relevance`, tích hợp và eval cuối | Theo kế hoạch; Codex hỗ trợ triển khai v4 trong working tree, chưa commit |
-| Hoàn | B1–B3, B5; `filter_date`, `source_stats` | Theo kế hoạch; Codex đã chuẩn bị, chờ Hoàn xác nhận phần việc thực tế |
+| Hoàng | UI Streamlit, phiên/transcript, xác nhận gửi, tích hợp | Commit `037d5f0`; `app.py`, `ui_session.py`, test UI/session/Telegram; transcript v4 CLI/UI trong `starter_v0/transcripts/` |
+| Hoàng | `rank_relevance`, tích hợp và eval cuối | Commit `f383290` chứa code, registry, declaration, test và evidence v4; base/group/extension run đều đạt 100%. Codex có hỗ trợ triển khai; attribution giữ theo metadata Git và báo cáo cá nhân. |
+| Hoàn | B1–B3, B5; `dedupe`, `filter_date`, `source_stats` | Báo cáo cá nhân [`2A202603972_NguyenCongHoan.md`](report/team/2A202603972_NguyenCongHoan.md), `dedupe`/group eval tại commit `edd3fa5`, cùng evidence tool/test/run trong `starter_v0/`. Không khẳng định Hoàn là tác giả độc quyền của `edd3fa5`. |
 | Cả hai | Thử UI chéo, rà báo cáo và thông tin cá nhân | Chưa có xác nhận nghiệm thu của người ngoài nhóm |
 
-Commit `0074d7c` (prompt/declaration) và `edd3fa5` (dedupe/group eval) có tác giả `denker9999`; không tự suy diễn phân chia đóng góp giữa hai thành viên. Hoàn có commit cập nhật TEAM (`784e5b3`, `0b56ad3`), chưa xác minh commit kỹ thuật riêng. Email để trống chờ xác nhận.
+Commit `0074d7c` (prompt/declaration) và `edd3fa5` (dedupe/group eval) có metadata tác giả `denker9999` thuộc tài khoản GitHub `phihoang1709`; vì vậy bảng chỉ ghi nhận evidence và báo cáo cá nhân, không suy diễn tác giả cá nhân ngoài metadata. Email của cả hai thành viên đã được bổ sung ở trên.
