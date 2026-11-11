@@ -32,9 +32,9 @@ Kiểm tra HTTP ngày 10/11/2026 trả mã 200 và trang Streamlit trả về sh
 | papers | Tìm paper arXiv | Không |
 | paper_text | Đọc paper arXiv cụ thể | Không |
 | dedupe | Bỏ mục trùng, giữ bản đầu tiên | Có, commit edd3fa5 |
-| filter_date | Lọc ngày gồm hai đầu mốc, đếm mục thiếu/sai ngày | Có, v4 do Codex hỗ trợ |
-| rank_relevance | Xếp hạng theo số token query khác nhau khớp title/summary | Có, v4 do Codex hỗ trợ |
-| source_stats | Đếm theo hostname HTTP(S), tách URL thiếu/sai | Có, v4 do Codex hỗ trợ |
+| filter_date | Lọc ngày gồm hai đầu mốc, đếm mục thiếu/sai ngày | Có |
+| rank_relevance | Xếp hạng theo số token query khác nhau khớp title/summary | Có |
+| source_stats | Đếm theo hostname HTTP(S), tách URL thiếu/sai | Có |
 
 ### A3. Câu hỏi mẫu để thử
 
