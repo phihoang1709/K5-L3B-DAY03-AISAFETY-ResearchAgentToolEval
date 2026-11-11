@@ -69,7 +69,7 @@ Metric là **case accuracy**. Các run được chấp nhận trong bảng đề
 | v4 | Cùng artifact, group không đổi | Giữ routing nhóm khi tăng toolset | 100% group | 100% (10/10) | [group v4](../../starter_v0/runs/v4_B_group_openrouter_20261110T231141594846.json) |
 | v4 | Cùng artifact, bonus riêng | Route 4 tool mới và hỏi thiếu mốc ngày | — | 100% (6/6) | [bonus v4](../../starter_v0/runs/v4_B_extension_openrouter_20261110T231122313648.json) |
 
-Base v3: v3+pfddaf2ba05d4+t82590deaad13; group sau dedupe: v3+pe7485b4afc9c+t7c117d8bccc0. Không lấy 100% base v3 để chứng minh bản dedupe đã được đo base.
+Base v3: v3+pfddaf2ba05d4+t82590deaad13; group sau dedupe: v3+pe7485b4afc9c+t7c117d8bccc0. Không lấy 100% base v3 để chứng minh bản dedupe đã được đo base. Dataset extension gốc eval_research_extension.json không được chạy với v4; run bonus 6/6 dùng dataset eval_bonus.json riêng.
 
 Ba run v4 và hai transcript cuối đều **v4+pdbd982b6c856+t45f38af86103**. Routing/argument/multiturn accuracy của cả ba run v4 đều 100%. Đây là một lượt đo mỗi suite, không phải độ tin cậy tổng quát. Eval chấm routing/args, không chấm chất lượng câu trả lời hay mọi lỗi tool: G10 có send đúng args nhưng trả lỗi thiếu token vì credential gửi đã chủ động tắt trong tiến trình.
 
@@ -116,7 +116,7 @@ Hai kịch bản dùng provider thật với input tự động, không phải m
 | CLI 2 → 3 | Thiếu mốc ngày → bổ sung | clarify → filter_date | v4, CLI | Hỏi lại rồi giữ A, bỏ B ngoài khoảng |
 | CLI 4 → 5 | Gửi bản nháp → hủy | clarify yes_no → no tool | v4, CLI | Không gửi |
 | UI 1 | Tìm 3 tin AI trong tuần, kèm nguồn | lookup | v4, UI | 3 mục kèm URL; chưa đánh giá độc lập từng nguồn |
-| UI 2 → 3 | Thiếu mốc ngày → bổ sung | clarify → filter_date | v4, UI | Giữ A, bỏ B |
+| UI 2 → 3 | Thiếu mốc ngày → bổ sung | clarify + dedupe thừa → filter_date | v4, UI | Giữ A, bỏ B; lượt hỏi lại có gọi dedupe không cần thiết |
 | UI 4 → 5 | Gửi bản nháp → xác nhận bằng chat | clarify → send bị UI giữ lại | v4, UI | Hiện nội dung, chờ nút xác nhận riêng |
 | UI 6 | Bấm Hủy | Không gọi tool | v4, UI | cancelled, không gửi |
 
@@ -162,13 +162,13 @@ Hoãn theo ưu tiên đã chọn. Chưa có run local, chưa có so sánh cloud/
 
 ## 6. Tổng hợp đóng góp
 
-[Hoàng](2A202603952_NguyenPhiHoang.md): UI/session/confirmation/regression có commit 037d5f0. [Hoàn](2A202603972_NguyenCongHoan.md): xác minh được commit TEAM; phân công tool/bảng cần xác nhận thực tế. Chi tiết [TEAM.md](../../TEAM.md). Codex hỗ trợ code/báo cáo v4, không gán thay công cá nhân. Claude Code được khởi chạy review qua Herdr nhưng dừng tại prompt quyền, chưa có findings.
+[Hoàng](2A202603952_NguyenPhiHoang.md): UI/session/confirmation/regression có commit 037d5f0. [Hoàn](2A202603972_NguyenCongHoan.md): xác minh được commit TEAM; phân công tool/bảng cần xác nhận thực tế. Chi tiết [TEAM.md](../../TEAM.md). Codex hỗ trợ code/báo cáo v4, không gán thay công cá nhân. Claude Code hoàn tất review độc lập qua Herdr: approve có điều kiện, không có Critical. Hai finding Important về việc thiếu đồng bộ remote và link tới evidence chưa được track đã được xử lý bằng fast-forward, hòa báo cáo và xóa folder evidence cùng liên kết. Reviewer cũng đề xuất minor: ghi chú tool call dedupe thừa trong B4, thêm test cho IDN/localhost/trailing dot, nói rõ extension gốc chưa chạy trên v4, và giải thích so sánh object args giữ nguyên hoa/thường; các ghi chú này đã được xử lý hoặc nêu rõ dưới đây.
 
 ## 7. Hạn chế và hướng cải thiện — B6. Reflection
 
 - Prompt quyết định routing/scope/confirmation; declaration quy định cách dùng và args. Runtime UI cần khóa gửi độc lập vì tuân thủ prompt không phải cơ chế cấp quyền.
 - Eval đo lượt chọn tool, multi-turn là context gộp; không thay thế live loop, chất lượng nguồn, hallucination, prompt injection hay UX. Cần review thủ công và kiểm tra người dùng thật.
-- Một lượt đạt 100% không chứng minh ổn định qua nhiều lần/model. Vòng tiếp theo thử paraphrase, thiếu một mốc ngày, nhiều phép biến đổi nối tiếp và policy tiếng Việt; ghi metric thật kể cả giảm.
+- Một lượt đạt 100% không chứng minh ổn định qua nhiều lần/model. Vòng tiếp theo thử paraphrase, thiếu một mốc ngày, nhiều phép biến đổi nối tiếp và policy tiếng Việt; ghi metric thật kể cả giảm. Bộ chấm so sánh nguyên văn object trong danh sách, kể cả phân biệt hoa/thường, để kiểm tra việc model giữ đúng payload người dùng cung cấp.
 - Hoàn thiện nghiệm thu public UI, phân công/commit cá nhân và điều kiện private channel trước khi kết luận đầy đủ CP1–CP5; local model hoãn.
 
 ## 8. Tài liệu tham khảo

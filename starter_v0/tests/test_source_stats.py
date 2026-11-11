@@ -35,3 +35,12 @@ def test_invalid_list_returns_error(items):
 def test_empty_list():
     assert source_stats([]) == {"tool": "source_stats", "sources": {}, "item_count": 0,
                                "valid_url_count": 0, "missing_url_count": 0, "invalid_url_count": 0}
+
+
+@pytest.mark.parametrize("url,hostname", [
+    ("https://example.com./path", "example.com."),
+    ("https://例え.テスト/", "例え.テスト"),
+    ("http://localhost:8000/health", "localhost"),
+])
+def test_trailing_dot_idn_and_localhost_are_supported(url, hostname):
+    assert source_stats([{"url": url}])["sources"] == {hostname: 1}

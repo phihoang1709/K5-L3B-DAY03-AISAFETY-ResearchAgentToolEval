@@ -24,7 +24,7 @@
 - Test: [UI](../../starter_v0/tests/test_streamlit_app.py), [session](../../starter_v0/tests/test_ui_session.py), [Telegram regression](../../starter_v0/tests/test_send_errors.py). Toàn suite: 149 passed, 14 skipped, 0 failed/error.
 - Bằng chứng cuối dùng cùng v4: [CLI 5 lượt](../../starter_v0/transcripts/v4_openrouter_20261110T231201448826.transcript.json), [UI 6 lượt](../../starter_v0/transcripts/v4_openrouter_47bebc6ecb21423abe67cddb790104c8.transcript.json); đây là kịch bản tự động gọi provider thật, không phải đánh giá của người dùng ngoài nhóm.
 - Số liệu nhóm và giới hạn: [group_report.md](group_report.md). Link UI: [AISAFETY Streamlit](https://k5-l3b-day03-aisafety-researchagenttooleval-6ftuhztxnienlwuu6g.streamlit.app/).
-- AI/công cụ: Codex hỗ trợ code, test, tổng hợp log và báo cáo; Claude Code đã được khởi chạy review qua Herdr nhưng dừng tại prompt quyền; chưa có findings. Kiểm chứng bằng pytest, đối chiếu hash/run/transcript và review độc lập; không suy diễn từ mock test thành gửi Telegram thật.
+- AI/công cụ: Codex hỗ trợ code, test, tổng hợp log và báo cáo; Claude Code hoàn tất review qua Herdr với verdict approve có điều kiện, không có Critical; các finding Important đã được xử lý sau khi hòa remote và bỏ evidence folder. Kiểm chứng bằng pytest, đối chiếu hash/run/transcript và review độc lập; không suy diễn từ mock test thành gửi Telegram thật.
 
 ## 5. Tự đánh giá
 
