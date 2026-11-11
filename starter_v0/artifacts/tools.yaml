@@ -134,6 +134,45 @@ tools:
               section: {type: string}
       required: [items]
 
+  - name: filter_date
+    description: >-
+      Filter existing items by their date field within an inclusive date range.
+      Use only when items and both YYYY-MM-DD boundaries are supplied. Skip and
+      count missing or invalid item dates; never infer dates or retrieve content.
+      Ask clarify when a boundary is missing. Invalid ranges return an error.
+    parameters:
+      type: object
+      properties:
+        items: {type: array, items: {type: object}, description: "Existing objects with an explicit date field when available."}
+        start_date: {type: string, description: "Inclusive start date, exactly YYYY-MM-DD."}
+        end_date: {type: string, description: "Inclusive end date, exactly YYYY-MM-DD; not before start_date."}
+      required: [items, start_date, end_date]
+
+  - name: rank_relevance
+    description: >-
+      Rank existing items by distinct query-token overlap in title and summary.
+      Use for lexical relevance ranking, not web retrieval or credibility scoring.
+      Casefold and split on non-letter/non-number characters; ties keep input order.
+      Query must contain a letter or number; limit is a positive integer (default 5).
+    parameters:
+      type: object
+      properties:
+        items: {type: array, items: {type: object}, description: "Existing objects with optional string title and summary."}
+        query: {type: string, description: "User-supplied relevance query; preserve its terms."}
+        limit: {type: integer, default: 5, minimum: 1, description: "Maximum number of ranked items."}
+      required: [items, query]
+
+  - name: source_stats
+    description: >-
+      Count existing items by lowercase HTTP(S) URL hostname, with separate
+      missing and invalid URL counts. Use for source distribution only; do not
+      assess credibility, retrieve URLs, or invent sources. Subdomains stay distinct.
+    parameters:
+      type: object
+      properties:
+        items: {type: array, items: {type: object}, description: "Existing objects with a URL when available."}
+      required: [items]
+
   # ---------------- Existing action and knowledge tools ----------------
   - name: send
     description: >-

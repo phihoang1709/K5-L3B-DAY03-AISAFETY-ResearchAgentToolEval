@@ -101,6 +101,10 @@ def normalize_value(value: Any) -> Any:
     if isinstance(value, str):
         return value.strip().lower()
     if isinstance(value, list):
+        # Research items are ordered payloads, not unordered tag lists. Python
+        # cannot sort dicts; preserving them also catches reordered input.
+        if any(isinstance(item, (dict, list)) for item in value):
+            return value
         return sorted(normalize_value(item) for item in value)
     return value
 

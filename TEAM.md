@@ -2,10 +2,11 @@
 
 ## Thông tin nhóm
 
-- Tên nhóm:
-- Lớp: L3A / L3B
-- Repo nhóm: `K5-L3A-DAY03-TenNhom-ResearchAgentToolEval` hoặc `K5-L3B-DAY03-TenNhom-ResearchAgentToolEval` (xem [SUBMISSION.md](SUBMISSION.md))
-- URL repo, nhánh nộp, commit chốt:
+- Tên nhóm: AISAFETY
+- Lớp: L3B
+- Repo nhóm: `K5-L3B-DAY03-AISAFETY-ResearchAgentToolEval`
+- URL repo: https://github.com/phihoang1709/K5-L3B-DAY03-AISAFETY-ResearchAgentToolEval
+- Nhánh dự kiến nộp: `main`; commit chốt: chưa chốt. Remote được kiểm tra ở `edd3fa5`; phần bổ sung v4 hiện chưa commit/push.
 
 ## Thành viên
 
@@ -16,26 +17,16 @@
 
 ## Cá nhân
 
-Mỗi thành viên đồng thời tạo một báo cáo riêng trong `report/` theo dạng:
+- [Nguyễn Phi Hoàng — 2A202603952](report/team/2A202603952_NguyenPhiHoang.md)
+- [Nguyễn Công Hoàn — 2A202603972](report/team/2A202603972_NguyenCongHoan.md)
 
-```text
-report/team/MSSV_HoTen.md
-```
+## Phân công và bàn giao
 
-Ví dụ: `report/team/20241234_NguyenVanAn.md`.
+| Người chính | Phần việc | Bằng chứng / trạng thái |
+|---|---|---|
+| Hoàng | UI Streamlit, phiên/transcript, xác nhận gửi, tích hợp | Commit `037d5f0`, `app.py`, `ui_session.py`, test UI/session/Telegram |
+| Hoàng | `rank_relevance`, tích hợp và eval cuối | Theo kế hoạch; Codex hỗ trợ triển khai v4 trong working tree, chưa commit |
+| Hoàn | B1–B3, B5; `filter_date`, `source_stats` | Theo kế hoạch; Codex đã chuẩn bị, chờ Hoàn xác nhận phần việc thực tế |
+| Cả hai | Thử UI chéo, rà báo cáo và thông tin cá nhân | Chưa có xác nhận nghiệm thu của người ngoài nhóm |
 
-Sao chép mục dưới đây cho từng thành viên.
-
-## HoVaTen-MSSV
-
-### Phần việc phụ trách
-
--
-
-### Đóng góp cụ thể
-
--
-
-### Bằng chứng
-
--
+Commit `0074d7c` (prompt/declaration) và `edd3fa5` (dedupe/group eval) có tác giả `denker9999`; không tự suy diễn phân chia đóng góp giữa hai thành viên. Hoàn có commit cập nhật TEAM (`784e5b3`, `0b56ad3`), chưa xác minh commit kỹ thuật riêng. Email để trống chờ xác nhận.

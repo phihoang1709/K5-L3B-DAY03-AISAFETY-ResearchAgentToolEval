@@ -27,3 +27,6 @@ Thumbs.db
 # Local browser verification artifacts
 .playwright-cli/
 output/playwright/
+.agents/
+.claude/
+AGENTS.MD

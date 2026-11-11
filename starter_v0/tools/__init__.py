@@ -9,6 +9,9 @@ import yaml
 # The imported function names are the underlying implementations (unchanged).
 from .clarify.tool import ask_user
 from .dedupe.tool import dedupe_items
+from .filter_date.tool import filter_date
+from .rank_relevance.tool import rank_relevance
+from .source_stats.tool import source_stats
 from .papers.tool import arxiv_search
 from .paper_text.tool import get_arxiv_paper_text
 from .timeline.tool import get_user_tweets
@@ -28,6 +31,9 @@ from .lookup.tool import web_search
 TOOL_FUNCTIONS = {
     "clarify": ask_user,
     "dedupe": dedupe_items,
+    "filter_date": filter_date,
+    "rank_relevance": rank_relevance,
+    "source_stats": source_stats,
     "timeline": get_user_tweets,
     "social_search": search_tweets,
     "lookup": web_search,

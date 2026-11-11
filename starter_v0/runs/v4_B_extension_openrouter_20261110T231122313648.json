@@ -1,0 +1,536 @@
+{
+  "run_id": "v4_B_extension_openrouter_20261110T231122313648",
+  "version": "v4",
+  "artifact_version": "v4+pdbd982b6c856+t45f38af86103",
+  "prompt_hash": "dbd982b6c856261cac63ec9e6deb767e54435a20bee24bc76ce2b486106782e8",
+  "tools_hash": "45f38af86103462e50cc1716e7b64ed62a4d7bfaf4791f4525131142fe79ca51",
+  "phase": "B",
+  "suite": "extension",
+  "provider": "openrouter",
+  "model": "openai/gpt-4o-mini",
+  "system_prompt": "C:\\Users\\phih5\\codeenv\\vinai\\K5-L3B-DAY03-AISAFETY-ResearchAgentToolEval\\starter_v0\\artifacts\\system_prompt.md",
+  "tools": "C:\\Users\\phih5\\codeenv\\vinai\\K5-L3B-DAY03-AISAFETY-ResearchAgentToolEval\\starter_v0\\artifacts\\tools.yaml",
+  "eval_cases": "data\\eval_bonus.json",
+  "dataset_id": "aisafety_bonus_v1",
+  "dataset_role": "extension",
+  "description": "Independent offline-tool routing cases; original base, group and extension datasets are unchanged.",
+  "generated_at": "2026-11-10T23:11:22",
+  "summary": {
+    "total_cases": 6,
+    "measured_cases": 6,
+    "provider_error_cases": 0,
+    "passed_cases": 6,
+    "case_accuracy": 1.0,
+    "tool_routing_accuracy": 1.0,
+    "argument_accuracy": 1.0,
+    "multiturn_accuracy": 1.0,
+    "failure_counts": {},
+    "observed_mismatch_counts": {}
+  },
+  "results": [
+    {
+      "id": "X01_filter_date",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Route to date filter and preserve explicit items and inclusive bounds."
+      },
+      "input": "Lọc danh sách theo trường date từ 2024-02-01 đến 2024-02-29, gồm cả hai đầu mốc. Chỉ lọc, không tìm kiếm: [{\"title\":\"A\",\"date\":\"2024-02-29\"},{\"title\":\"B\",\"date\":\"2024-03-01\"}]",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "filter_date",
+            "args": {
+              "items": [
+                {
+                  "title": "A",
+                  "date": "2024-02-29"
+                },
+                {
+                  "title": "B",
+                  "date": "2024-03-01"
+                }
+              ],
+              "start_date": "2024-02-01",
+              "end_date": "2024-02-29"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "filter_date",
+            "args": {
+              "items": [
+                {
+                  "title": "A",
+                  "date": "2024-02-29"
+                },
+                {
+                  "title": "B",
+                  "date": "2024-03-01"
+                }
+              ],
+              "start_date": "2024-02-01",
+              "end_date": "2024-02-29"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "filter_date",
+          "args": {
+            "items": [
+              {
+                "title": "A",
+                "date": "2024-02-29"
+              },
+              {
+                "title": "B",
+                "date": "2024-03-01"
+              }
+            ],
+            "start_date": "2024-02-01",
+            "end_date": "2024-02-29"
+          },
+          "result": {
+            "tool": "filter_date",
+            "items": [
+              {
+                "title": "A",
+                "date": "2024-02-29"
+              }
+            ],
+            "item_count": 2,
+            "kept_count": 1,
+            "invalid_date_count": 0,
+            "out_of_range_count": 1,
+            "dropped_count": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "X02_rank_relevance",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Route to lexical ranking with exact query and positive limit."
+      },
+      "input": "Xếp hạng mức liên quan theo từ khóa AI robotics, lấy 1 mục từ danh sách này, không tra cứu thêm: [{\"title\":\"AI\"},{\"title\":\"AI robotics\"}]",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "rank_relevance",
+            "args": {
+              "items": [
+                {
+                  "title": "AI"
+                },
+                {
+                  "title": "AI robotics"
+                }
+              ],
+              "query": "AI robotics",
+              "limit": 1
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "rank_relevance",
+            "args": {
+              "items": [
+                {
+                  "title": "AI"
+                },
+                {
+                  "title": "AI robotics"
+                }
+              ],
+              "query": "AI robotics",
+              "limit": 1
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "rank_relevance",
+          "args": {
+            "items": [
+              {
+                "title": "AI"
+              },
+              {
+                "title": "AI robotics"
+              }
+            ],
+            "query": "AI robotics",
+            "limit": 1
+          },
+          "result": {
+            "tool": "rank_relevance",
+            "items": [
+              {
+                "title": "AI robotics"
+              }
+            ],
+            "scores": [
+              2
+            ],
+            "item_count": 2,
+            "returned_count": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "X03_source_stats",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Source distribution routes locally without fetching URLs."
+      },
+      "input": "Đếm số mục theo hostname trong danh sách có sẵn, thống kê riêng URL thiếu/sai, không đánh giá uy tín: [{\"url\":\"https://EXAMPLE.com/a\"},{\"url\":\"http://example.com/b\"},{}]",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "source_stats",
+            "args": {
+              "items": [
+                {
+                  "url": "https://EXAMPLE.com/a"
+                },
+                {
+                  "url": "http://example.com/b"
+                },
+                {}
+              ]
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "source_stats",
+            "args": {
+              "items": [
+                {
+                  "url": "https://EXAMPLE.com/a"
+                },
+                {
+                  "url": "http://example.com/b"
+                },
+                {}
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "source_stats",
+          "args": {
+            "items": [
+              {
+                "url": "https://EXAMPLE.com/a"
+              },
+              {
+                "url": "http://example.com/b"
+              },
+              {}
+            ]
+          },
+          "result": {
+            "tool": "source_stats",
+            "sources": {
+              "example.com": 2
+            },
+            "item_count": 3,
+            "valid_url_count": 2,
+            "missing_url_count": 1,
+            "invalid_url_count": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "X04_filter_missing_range",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Missing bounds require clarification, never inferred dates."
+      },
+      "input": "Lọc theo khoảng ngày cho danh sách [{\"title\":\"A\",\"date\":\"2024-02-29\"}]. Tôi chưa chọn ngày bắt đầu và kết thúc.",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "response_type": "text"
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "clarify",
+            "args": {
+              "question": "Bạn có thể cung cấp ngày bắt đầu và ngày kết thúc để lọc danh sách không?",
+              "response_type": "text"
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "missing_info",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "clarify",
+          "args": {
+            "question": "Bạn có thể cung cấp ngày bắt đầu và ngày kết thúc để lọc danh sách không?",
+            "response_type": "text"
+          },
+          "result": {
+            "tool": "ask_user",
+            "question": "Bạn có thể cung cấp ngày bắt đầu và ngày kết thúc để lọc danh sách không?",
+            "response_type": "text",
+            "options": [],
+            "awaiting_user": true
+          }
+        }
+      ]
+    },
+    {
+      "id": "X05_rank_followup",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": true,
+      "metadata": {
+        "what_it_tests": "Carry existing items across turns while filling query and limit."
+      },
+      "input": [
+        {
+          "role": "user",
+          "content": "Danh sách có sẵn: [{\"title\":\"AI\"},{\"title\":\"robotics\"}]. Tôi muốn xếp hạng theo từ khóa."
+        },
+        {
+          "role": "user",
+          "content": "Từ khóa là robotics, lấy tối đa 2 mục, chỉ xếp hạng danh sách đã đưa."
+        }
+      ],
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "rank_relevance",
+            "args": {
+              "items": [
+                {
+                  "title": "AI"
+                },
+                {
+                  "title": "robotics"
+                }
+              ],
+              "query": "robotics",
+              "limit": 2
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "rank_relevance",
+            "args": {
+              "items": [
+                {
+                  "title": "AI"
+                },
+                {
+                  "title": "robotics"
+                }
+              ],
+              "query": "robotics",
+              "limit": 2
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_arg_value",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "rank_relevance",
+          "args": {
+            "items": [
+              {
+                "title": "AI"
+              },
+              {
+                "title": "robotics"
+              }
+            ],
+            "query": "robotics",
+            "limit": 2
+          },
+          "result": {
+            "tool": "rank_relevance",
+            "items": [
+              {
+                "title": "robotics"
+              },
+              {
+                "title": "AI"
+              }
+            ],
+            "scores": [
+              1,
+              0
+            ],
+            "item_count": 2,
+            "returned_count": 2
+          }
+        }
+      ]
+    },
+    {
+      "id": "X06_dedupe",
+      "phase": "B",
+      "suite": "extension",
+      "case_suite": "extension",
+      "is_multiturn": false,
+      "metadata": {
+        "what_it_tests": "Existing dedupe routing remains available after three additional tools."
+      },
+      "input": "Loại bỏ mục trùng, giữ bản đầu tiên: [{\"title\":\"AI\",\"url\":\"https://example.com/a\"},{\"title\":\"AI copy\",\"url\":\"https://example.com/a\"}]",
+      "expect": {
+        "tool_calls": [
+          {
+            "name": "dedupe",
+            "args": {
+              "items": [
+                {
+                  "title": "AI",
+                  "url": "https://example.com/a"
+                },
+                {
+                  "title": "AI copy",
+                  "url": "https://example.com/a"
+                }
+              ]
+            }
+          }
+        ]
+      },
+      "result": {
+        "passed": true,
+        "routing_correct": true,
+        "args_correct": true,
+        "actual_tool_calls": [
+          {
+            "name": "dedupe",
+            "args": {
+              "items": [
+                {
+                  "title": "AI",
+                  "url": "https://example.com/a"
+                },
+                {
+                  "title": "AI copy",
+                  "url": "https://example.com/a"
+                }
+              ]
+            }
+          }
+        ],
+        "actual_text": null,
+        "case_failure_type": "wrong_tool",
+        "observed_mismatch": null,
+        "failure_type": null,
+        "failures": []
+      },
+      "tool_results": [
+        {
+          "tool": "dedupe",
+          "args": {
+            "items": [
+              {
+                "title": "AI",
+                "url": "https://example.com/a"
+              },
+              {
+                "title": "AI copy",
+                "url": "https://example.com/a"
+              }
+            ]
+          },
+          "result": {
+            "tool": "dedupe",
+            "items": [
+              {
+                "title": "AI",
+                "url": "https://example.com/a"
+              }
+            ],
+            "item_count": 2,
+            "unique_count": 1,
+            "duplicates_removed": 1
+          }
+        }
+      ]
+    }
+  ]
+}

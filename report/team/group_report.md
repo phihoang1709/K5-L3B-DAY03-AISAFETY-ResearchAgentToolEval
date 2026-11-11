@@ -1,158 +1,178 @@
-# Báo cáo nhóm — Day 03 Research Agent Tool Eval
+# Báo cáo nhóm — AISAFETY — Day 03 Research Agent Tool Eval
 
 ## 1. Thông tin nhóm
 
-- Tên nhóm: AISAFETY
-- Thành viên và phân công: xem [TEAM.md](../../TEAM.md)
-- Provider/model dùng cho v0–v3: OpenRouter / `openai/gpt-4o-mini`
-
+- Nhóm AISAFETY, lớp L3B; thành viên và phân công: [TEAM.md](../../TEAM.md).
+- Provider/model v0–v4: OpenRouter / openai/gpt-4o-mini.
 
 ## 2. Mục tiêu và cách tiếp cận — PHẦN A: Giới thiệu agent
 
 ### A1. Agent này làm được gì
 
-Research agent tìm thông tin trên web và mạng xã hội, đọc URL, tìm/đọc paper arXiv, tra cứu policy nội bộ, định dạng digest và gửi nội dung lên Telegram sau khi người dùng xác nhận.
+Agent tìm tin web/social, đọc URL và paper, tra chính sách nội bộ, xử lý danh sách và tổng hợp kèm nguồn. Gửi Telegram cần xác nhận; UI có bước xem nội dung và nút xác nhận/hủy riêng.
 
-**Cách chạy UI:**
+**Cách chạy UI:** từ root repo, tạo venv nếu chưa có bằng lệnh `uv venv starter_v0/.venv`, cài dependency bằng `uv pip install --python starter_v0/.venv/Scripts/python.exe -r starter_v0/requirements.txt`, đặt biến môi trường DAY03_UI_VERSION=v4, rồi chạy `starter_v0/.venv/Scripts/python.exe -m streamlit run starter_v0/app.py`. Cấu hình starter_v0/.env theo [hướng dẫn](../../docs/TOOL-SETUP.md). Streamlit đã có trong [requirements.txt](../../starter_v0/requirements.txt). Không đưa secret vào Git.
 
-```powershell
-cd starter_v0
-python -m streamlit run app.py
-```
+**Link dùng thử:** [AISAFETY Streamlit](https://k5-l3b-day03-aisafety-researchagenttooleval-6ftuhztxnienlwuu6g.streamlit.app/).
 
-Dependency UI: `streamlit>=1.45,<2` trong `starter_v0/requirements.txt`.
-
-**Link dùng thử:**
-
-`http://127.0.0.1:8501` (local URL đã kiểm tra HTTP 200; chưa có public deployment).
+Kiểm tra HTTP ngày 10/11/2026 trả mã 200 và trang Streamlit trả về shell. UI local chạy kịch bản bằng provider thật qua Streamlit AppTest, 0 exception; chưa chứng minh WebSocket/chat công khai hoạt động, deploy khớp v4, hoặc có người ngoài nhóm nghiệm thu link. Vì chưa push v4, không dùng link deploy làm bằng chứng artifact cuối.
 
 ### A2. Tool agent có
 
 | Tên tool | Làm được gì | Tool mới nhóm thêm? |
 |---|---|---|
-| `clarify` | hỏi lại khi thiếu thông tin hoặc cần xác nhận | không |
-| `timeline` | lấy bài đăng gần đây của một tài khoản | không |
-| `social_search` | tìm bài đăng theo chủ đề trên mạng xã hội | không |
-| `lookup` | tìm kiếm web/news theo topic và timeframe | không |
-| `fetch` | đọc nội dung một URL cụ thể | không |
-| `format` | trình bày các item đã có thành digest | không |
-| `dedupe` | loại bài trùng theo URL hoặc title, giữ thứ tự đầu tiên | có |
-| `send` | gửi text lên Telegram sau xác nhận | không |
-| `policy` | tìm trong policy nội bộ | không |
-| `papers` | tìm paper/preprint trên arXiv | không |
-| `paper_text` | tải và trích text từ paper arXiv | không |
+| clarify | Hỏi thông tin còn thiếu hoặc xác nhận | Không |
+| timeline | Lấy bài từ một tài khoản cụ thể | Không |
+| social_search | Tìm bài social theo chủ đề | Không |
+| lookup | Tìm thông tin/tin tức web | Không |
+| fetch | Đọc URL cụ thể | Không |
+| format | Định dạng dữ liệu đã có thành digest | Không |
+| send | Gửi nội dung đã xác nhận lên Telegram cấu hình | Không |
+| policy | Tra chính sách nội bộ local | Không |
+| papers | Tìm paper arXiv | Không |
+| paper_text | Đọc paper arXiv cụ thể | Không |
+| dedupe | Bỏ mục trùng, giữ bản đầu tiên | Có, commit edd3fa5 |
+| filter_date | Lọc ngày gồm hai đầu mốc, đếm mục thiếu/sai ngày | Có, v4 do Codex hỗ trợ |
+| rank_relevance | Xếp hạng theo số token query khác nhau khớp title/summary | Có, v4 do Codex hỗ trợ |
+| source_stats | Đếm theo hostname HTTP(S), tách URL thiếu/sai | Có, v4 do Codex hỗ trợ |
 
 ### A3. Câu hỏi mẫu để thử
 
-1. `Tin tức AI hôm nay có gì nổi bật?`
-2. `Cho mình các tweet phổ biến nhất về GPT-5.`
-3. `Tóm tắt bài viết này: https://openai.com/research/`
-4. `Tóm tắt 5 tweet mới nhất của Elon Musk.`
-5. `Đăng bản tin này lên Telegram giúp mình.`
+1. Tìm 3 tin mới về AI trong tuần này, kèm nguồn.
+2. Lọc theo ngày danh sách [{"title":"A","date":"2024-02-29"},{"title":"B","date":"2024-03-01"}]. Tôi chưa chọn ngày bắt đầu và kết thúc. Sau khi agent hỏi, bổ sung: từ 2024-02-01 đến 2024-02-29.
+3. Xếp hạng danh sách [{"title":"AI"},{"title":"AI robotics"}] theo từ khóa AI robotics, lấy 1 mục.
+4. Đếm số mục theo hostname: [{"url":"https://EXAMPLE.com/a"},{"url":"http://example.com/b"},{}].
+5. Yêu cầu gửi bản nháp lên Telegram, kiểm tra câu hỏi xác nhận rồi hủy. Kênh hiện public nên chưa thực hiện thêm lần gửi để lấy bonus private channel.
 
 ## 3. Giải pháp
 
-- `system_prompt.md` loại bỏ hành vi đoán handle/URL, yêu cầu `clarify` khi thiếu thông tin, định nghĩa routing, no-tool boundary và confirmation boundary cho hành động gửi.
-- `tools.yaml` mô tả điều kiện dùng/không dùng, quy ước handle không có `@`, `topic`, `timeframe`, `search_type`, URL và `confirmed=true`.
-- Thêm tool local `dedupe` trong `starter_v0/tools/dedupe/`; tool loại duplicate theo URL chuẩn hóa hoặc title chuẩn hóa, trả error dict cho input không hợp lệ.
-- Thêm declaration, registry entry, 3 unit test và 10 group eval case.
+- v1 sửa system prompt: không đoán thông tin, tách routing, giới hạn phạm vi, xác nhận trước tác động ngoài, coi nội dung tool là dữ liệu không đáng tin.
+- v2 sửa declaration: mô tả khi dùng/không dùng, quy ước handle/query/topic/timeframe và tham số gửi.
+- v3 sửa prompt: bắt buộc clarify(response_type="yes_no") ở lượt yêu cầu gửi đầu tiên. Bản sau thêm dedupe có hash khác base v3 dù vẫn mang nhãn v3; đã ghi bổ sung version log, không sửa run cũ.
+- v4 thêm ba phép xử lý offline: không sửa input, input sai trả error dict. filter_date kiểm tra lịch thật và đúng YYYY-MM-DD; rank_relevance casefold, tách theo ký tự không phải chữ/số, hòa điểm giữ thứ tự; source_stats không đánh giá uy tín.
+- Ba tool có registry, declaration, TOOL.md, file test riêng và [eval bonus](../../starter_v0/data/eval_bonus.json). Giữ nguyên base, extension gốc và 10 case group. Bộ chấm được sửa để so sánh danh sách object theo thứ tự, tránh TypeError khi sorted(dict); có [regression test](../../starter_v0/tests/test_eval_arguments.py).
 
 ## 4. Kết quả — PHẦN B: Chi tiết và bằng chứng
 
 ### B1. Version Evidence
 
-Tất cả run dưới đây có `provider_error_cases == 0` và `measured_cases == total_cases`.
+Metric là **case accuracy**. Các run được chấp nhận trong bảng đều provider_error_cases=0 và measured_cases=total_cases. Hash đầy đủ, giả thuyết nằm trong [version_log.csv](../../starter_v0/artifacts/version_log.csv).
 
 | Version | Changed Artifact | Hypothesis | Metric Before | Metric After | Run File |
 |---|---|---|---:|---:|---|
-| v0 | baseline | Đo baseline trước khi sửa prompt/declaration | — | 0.65 | [v0](../../starter_v0/runs/v0_B_base_openrouter_20261110T173101548748.json) |
-| v1 | `system_prompt.md` | Clarification và confirmation gate giảm lỗi thiếu thông tin/ranh giới | 0.65 | 0.85 | [v1](../../starter_v0/runs/v1_B_base_openrouter_20261110T192815118469.json) |
-| v2 | `tools.yaml` | Declaration rõ hơn giảm sai argument và routing | 0.85 | 0.95 | [v2](../../starter_v0/runs/v2_B_base_openrouter_20261110T193040378126.json) |
-| v3 | `system_prompt.md` | No-tool boundary và yes/no confirmation bắt buộc loại lỗi còn lại | 0.95 | 1.00 | [v3](../../starter_v0/runs/v3_B_base_openrouter_20261110T193430837841.json) |
+| v0 | Baseline | Đo hành vi ban đầu | — | 65% (13/20) | [base v0](../../starter_v0/runs/v0_B_base_openrouter_20261110T173101548748.json) |
+| v1 | system_prompt.md | Hỏi lại/xác nhận giảm đoán và sai boundary | 65% | 85% (17/20) | [base v1](../../starter_v0/runs/v1_B_base_openrouter_20261110T192815118469.json) |
+| v2 | tools.yaml | Description và convention rõ giảm sai args | 85% | 95% (19/20) | [base v2](../../starter_v0/runs/v2_B_base_openrouter_20261110T193040378126.json) |
+| v3 | system_prompt.md | Bắt buộc yes_no ở lượt gửi đầu tiên | 95% | 100% (20/20) | [base v3](../../starter_v0/runs/v3_B_base_openrouter_20261110T193430837841.json) |
+| v3 sau dedupe | Prompt + tools | Route dedupe trên dữ liệu đã có | — | 100% (10/10 group) | [group lịch sử](../../starter_v0/runs/v3_B_group_openrouter_20261110T221819343346.json) |
+| v4 | Prompt + tools, 3 tool mới | Mở rộng offline vẫn giữ routing base | 100% base | 100% (20/20) | [base v4](../../starter_v0/runs/v4_B_base_openrouter_20261110T231223951219.json) |
+| v4 | Cùng artifact, group không đổi | Giữ routing nhóm khi tăng toolset | 100% group | 100% (10/10) | [group v4](../../starter_v0/runs/v4_B_group_openrouter_20261110T231141594846.json) |
+| v4 | Cùng artifact, bonus riêng | Route 4 tool mới và hỏi thiếu mốc ngày | — | 100% (6/6) | [bonus v4](../../starter_v0/runs/v4_B_extension_openrouter_20261110T231122313648.json) |
 
-Base v3 đạt `20/20`, `case_accuracy=1.0`, `tool_routing_accuracy=1.0`, `argument_accuracy=1.0`, `multiturn_accuracy=1.0`.
+Base v3: v3+pfddaf2ba05d4+t82590deaad13; group sau dedupe: v3+pe7485b4afc9c+t7c117d8bccc0. Không lấy 100% base v3 để chứng minh bản dedupe đã được đo base.
+
+Ba run v4 và hai transcript cuối đều **v4+pdbd982b6c856+t45f38af86103**. Routing/argument/multiturn accuracy của cả ba run v4 đều 100%. Đây là một lượt đo mỗi suite, không phải độ tin cậy tổng quát. Eval chấm routing/args, không chấm chất lượng câu trả lời hay mọi lỗi tool: G10 có send đúng args nhưng trả lỗi thiếu token vì credential gửi đã chủ động tắt trong tiến trình.
+
+[Run v4 lỗi môi trường](../../starter_v0/runs/v4_B_base_openrouter_20261110T230911407986.json) được giữ lại: 20 provider errors, 0/20 measured, **không hợp lệ để tính accuracy**; không diễn giải 0.0 trong JSON là điểm năng lực model.
 
 ### B2. Failure Analysis
 
+Nguồn: [baseline v0](../../starter_v0/runs/v0_B_base_openrouter_20261110T173101548748.json). Failure ghi nhãn case trong JSON và sai lệch quan sát; không đổi nhãn lịch sử.
+
 | Case ID | Failure Type | Actual Tool Calls | What Failed | Fix |
 |---|---|---|---|---|
-| R03 | `wrong_arg_value` | `lookup(query="AI news", topic="news", timeframe="day")` | query chứa từ phụ `news` | thêm convention query core subject |
-| R08 | `out_of_scope` | `send(...)` | gọi tool cho bài toán ngoài phạm vi | thêm no-tool/scope boundary |
-| R10 | `missing_info` | `timeline(screenname="sama")` | đoán người dùng khi thiếu handle | bắt buộc `clarify` |
-| R11 | `missing_info` | `fetch(url="https://example.com/article")` | tự bịa URL | bắt buộc hỏi URL |
-| R12 | `wrong_boundary` | `send(...)` | gửi trước xác nhận | bắt buộc `clarify(response_type="yes_no")` |
-| R13 | `wrong_arg_value` | `lookup(query="AI news", ...)` + `social_search(query="AI")` | web query chưa chuẩn hóa | mô tả rõ query/topic trong declaration |
-| R14 | `out_of_scope` | `send(...)` | biến yêu cầu coding thành hành động gửi | thêm rule không dùng `send` cho coding/meta |
+| R03_web_news_routing | wrong_tool; observed wrong_arg_value | lookup(query="AI news", news, day) | Query phải là AI | v2: core query |
+| R08_out_of_scope | out_of_scope; unexpected_tool_call | send(text=đáp án nguyên hàm) | Bài toán phải no_tool | v1/v3: scope, send không phải kênh trả lời |
+| R10_missing_handle | missing_info; missing_tool_call | timeline(screenname="sama") | Đoán tài khoản thay vì clarify | v1: không đoán người/tài khoản |
+| R11_missing_url | missing_info; missing_tool_call | fetch(url="https://example.com/article") | Bịa URL thay vì clarify | v1/v2: cần URL rõ ràng |
+| R12_confirm_before_send | wrong_boundary; missing_tool_call | send(text="Bản tin này") | Không hỏi xác nhận | v1/v3: clarify yes_no, chờ lượt sau |
+| R13_parallel_web_and_tweets | wrong_tool; observed wrong_arg_value | lookup("AI news", day) + social_search("AI", Latest) | Query lookup sai, thiếu topic=news | v2: query và topic |
+| R14_out_of_scope_coding | out_of_scope; unexpected_tool_call | send(text=mã Fibonacci) | Coding phải no_tool | v1/v3: no-tool boundary |
 
 ### B3. Team Eval Cases
 
-Run bằng [v3 group run](../../starter_v0/runs/v3_B_group_openrouter_20261110T221819343346.json) đạt 10/10.
+[Dataset](../../starter_v0/data/eval_group.json) giữ đúng **5 single + 5 multi**, kết quả từ [group v4](../../starter_v0/runs/v4_B_group_openrouter_20261110T231141594846.json).
 
 | Case ID | What It Tests | Expected Tool/Behavior | Result |
 |---|---|---|---|
-| G01 | news và timeframe hôm nay | `lookup(topic=news, timeframe=day)` | PASS |
-| G02 | social Top search | `social_search(search_type=Top)` | PASS |
-| G03 | URL cụ thể | `fetch` đúng URL | PASS |
-| G04 | thiếu tài khoản | `clarify(response_type=text)` | PASS |
-| G05 | route tới tool mới | `dedupe` | PASS |
-| G06 | multi-turn map Elon Musk | `timeline(screenname=elonmusk, limit=5)` | PASS |
-| G07 | multi-turn bổ sung URL | `fetch` đúng URL | PASS |
-| G08 | carry topic news/timeframe | `lookup(query=robotics, topic=news, timeframe=day)` | PASS |
-| G09 | chuyển social sang web | `lookup(query=OpenAI, topic=news)` | PASS |
-| G10 | confirmation trước publish | `send(confirmed=true)` sau lượt xác nhận | PASS |
+| G01_news_today | Single: tin AI hôm nay | lookup, AI, news, day | PASS |
+| G02_top_social_search | Single: top social | social_search GPT-5, Top | PASS |
+| G03_explicit_url_fetch | Single: URL cụ thể | fetch đúng URL | PASS |
+| G04_missing_account_clarify | Single: thiếu tài khoản | clarify, text | PASS |
+| G05_dedupe_existing_results | Single: tool mới | dedupe danh sách đã có | PASS |
+| G06_multiturn_account_fill | Multi: bổ sung người, giữ limit | timeline elonmusk, 5 | PASS |
+| G07_multiturn_url_fill | Multi: bổ sung URL | fetch URL đã cung cấp | PASS |
+| G08_multiturn_news_timeframe | Multi: đổi query, giữ ngày | lookup robotics, news, day | PASS |
+| G09_multiturn_switch_to_web | Multi: social sang web | lookup OpenAI, news | PASS |
+| G10_multiturn_send_confirmation | Multi: xác nhận gửi | send confirmed=true | PASS routing/args; không gửi thật |
 
 ### B4. Live Chat Evidence
 
-Hai transcript dưới đây có đủ 3 lượt và chứng minh luồng hỏi/preview/xác nhận hoặc hủy. Chúng được tạo với artifact UI trước bản prompt v3; transcript mới nhất `ui_openrouter_847ea278e15143688413db3929cacb72.transcript.json` có artifact group hiện tại nhưng chỉ có một lượt.
+Hai kịch bản dùng provider thật với input tự động, không phải mock hoặc phản hồi của người ngoài nhóm. [CLI](../../starter_v0/transcripts/v4_openrouter_20261110T231201448826.transcript.json) chạy qua chat.py; [UI](../../starter_v0/transcripts/v4_openrouter_47bebc6ecb21423abe67cddb790104c8.transcript.json) chạy app thật qua Streamlit AppTest. Cùng hash v4 tại B1.
 
 | Turn | User Request | Tool Calls | Version Evidence | Outcome |
 |---|---|---|---|---|
-| 1 | `trường vinuni thành lập năm nào?` | `lookup` | `ui+peb1c8179815b+te69bc53ed884` | answered |
-| 2 | `gửi vào tele cho tôi` | `send` | cùng transcript | waiting for confirmation |
-| 3 | `Xác nhận gửi` | `send(confirmed=true)` | cùng transcript | sent |
-| 1 | `trường bách khoa thành lập năm bao nhiêu` | `lookup` | `ui+peb1c8179815b+te69bc53ed884` | answered |
-| 2 | `Ok gửi thông tin đó vào trong tele` | `send` | cùng transcript | waiting for confirmation |
-| 3 | `Hủy gửi` | không gửi tiếp | cùng transcript | cancelled |
+| CLI 1 | Tra chính sách trích dẫn | policy | v4, CLI | Không có kết quả; không tính research thành công |
+| CLI 2 → 3 | Thiếu mốc ngày → bổ sung | clarify → filter_date | v4, CLI | Hỏi lại rồi giữ A, bỏ B ngoài khoảng |
+| CLI 4 → 5 | Gửi bản nháp → hủy | clarify yes_no → no tool | v4, CLI | Không gửi |
+| UI 1 | Tìm 3 tin AI trong tuần, kèm nguồn | lookup | v4, UI | 3 mục kèm URL; chưa đánh giá độc lập từng nguồn |
+| UI 2 → 3 | Thiếu mốc ngày → bổ sung | clarify → filter_date | v4, UI | Giữ A, bỏ B |
+| UI 4 → 5 | Gửi bản nháp → xác nhận bằng chat | clarify → send bị UI giữ lại | v4, UI | Hiện nội dung, chờ nút xác nhận riêng |
+| UI 6 | Bấm Hủy | Không gọi tool | v4, UI | cancelled, không gửi |
 
-Evidence: [transcript sent](../../starter_v0/transcripts/ui_openrouter_3c130f0306e04ffbb78ac38619b6d1b9.transcript.json), [transcript cancelled](../../starter_v0/transcripts/ui_openrouter_79e77818cca744f592b527313c359f6f.transcript.json).
+Hai kịch bản dùng provider thật; credential gửi Telegram đã tắt trong tiến trình kiểm tra. Transcript JSON là bằng chứng đối chiếu các lượt chat và trạng thái gửi.
 
 ### B5a. Required Evidence — Tool mới, unit test, UI
 
 | Item | Evidence File | What Worked | Risk / Guardrail |
 |---|---|---|---|
-| Tool mới `dedupe` | [`tools/dedupe/`](../../starter_v0/tools/dedupe/) | dedupe theo URL/title, giữ item đầu tiên, trả metrics | input sai trả error dict, không gọi mạng |
-| Unit test tool mới | [`test_tools_todo.py`](../../starter_v0/tests/test_tools_todo.py) | 3 test mới pass; combined suite 70 passed, 14 skipped | malformed item được bắt; eval model không kiểm tra output implementation |
-| UI | [`app.py`](../../starter_v0/app.py), lệnh `python -m streamlit run app.py`, local `http://127.0.0.1:8501` | app khởi động và trả HTTP 200; có transcript/download/confirmation controls | chưa có public deployment; cần cấu hình API key để chat live |
+| dedupe | [TOOL.md](../../starter_v0/tools/dedupe/TOOL.md), [3 test](../../starter_v0/tests/test_tools_todo.py) | Happy path, input sai, object sai; G05/X06 route đúng | Chỉ bỏ trùng theo URL/title |
+| filter_date | [TOOL.md](../../starter_v0/tools/filter_date/TOOL.md), [test](../../starter_v0/tests/test_filter_date.py) | Biên ngày, năm nhuận, thiếu/sai ngày, khoảng sai, không sửa input | Không suy diễn ngày; invalid/ngoài khoảng đếm riêng |
+| rank_relevance | [TOOL.md](../../starter_v0/tools/rank_relevance/TOOL.md), [test](../../starter_v0/tests/test_rank_relevance.py) | Unicode, token duy nhất, hòa điểm, input/limit sai | Lexical, không phải semantic relevance |
+| source_stats | [TOOL.md](../../starter_v0/tools/source_stats/TOOL.md), [test](../../starter_v0/tests/test_source_stats.py) | Host lowercase, port/subdomain/IPv6, URL thiếu/sai | Không kiểm tra DNS/uy tín |
+| Unit test | `cd starter_v0; pytest` | 149 passed, 14 skipped, 0 failed/error | 14 stub TODO vẫn skip; test offline |
+| UI | [app.py](../../starter_v0/app.py), transcript UI ở B4 | 14 tool, 6 lượt live, 0 exception, hủy gửi | HTTP 200 không thay thế thử chat public |
+
+Mỗi tool mới có ít nhất 3 test; ba tool bổ sung có 40 trường hợp test sau parametrization. Unit test bắt limit=True bị từ chối và ngày 2023-02-29 sai; eval routing không đảm bảo code xử lý được các input đó.
 
 ### B5. Bonus Evidence
 
-Không thực hiện các bonus Small Local Model, hơn 3 tool mới, test challenge 0 skipped hoặc Telegram evidence riêng cho bonus.
+| Bonus | Evidence File | What Worked | Risk / Guardrail |
+|---|---|---|---|
+| Small Local Model | B7 | Hoãn | Không run, không nhận bonus |
+| Hơn 3 tool mới | B5a, [bonus run](../../starter_v0/runs/v4_B_extension_openrouter_20261110T231122313648.json) | 4 tool đủ docs/registry/declaration/test và routing | Ba tool mới chưa commit; cần thành viên tự giải thích |
+| Telegram thật sau xác nhận | [transcript lịch sử](../../starter_v0/transcripts/ui_openrouter_3c130f0306e04ffbb78ac38619b6d1b9.transcript.json) | Lượt 2 chờ xác nhận, lượt 3 confirmed=true, status=sent | Hash baseline, không phải v4; chưa đủ bằng chứng private channel |
+| Test challenge qua regression | [test_send_errors.py](../../starter_v0/tests/test_send_errors.py), commit 037d5f0 | Giữ mô tả HTTP 400, HTTP 502 không JSON, che token, không retry | Mock không chứng minh gửi thật; không nhận nhánh 0 skipped |
+
+Bug Telegram: raise_for_status() trước đây làm mất mô tả API như Bad Request: chat not found; sửa lấy description từ JSON lỗi nếu có, giữ status code và che token trong exception. Bốn regression test kiểm tra cả thành công cũ.
+
+Telegram getChat xác minh kênh cấu hình trùng [@ai_slop_vip](https://t.me/ai_slop_vip), type=channel và có public username. **Chưa đáp ứng yêu cầu private channel** của RULES/RUBRIC. Không tự đổi privacy hoặc gửi thêm tin. Trạng thái private tại thời điểm transcript lịch sử cũng chưa được xác minh.
 
 ### B7. Small Local Model Challenge (bonus)
 
-Không thực hiện.
+Hoãn theo ưu tiên đã chọn. Chưa có run local, chưa có so sánh cloud/local hay hai vòng tối ưu local. Không điền metric giả hoặc nhận bonus phần này.
 
 ## 5. Khó khăn và cách xử lý
 
-- Full pytest ban đầu không collect được `test_streamlit_app.py` vì môi trường thiếu Streamlit; đã cài dependency theo `requirements.txt` để chạy UI. Bộ test CP3/contract/example chạy được với 70 passed và 14 skipped.
-- Các run base/group đều dùng provider thật và không có provider error.
-- Public URL chưa được deploy; bằng chứng UI hiện là local URL và transcript JSON.
+- Pytest sandbox gặp lỗi quyền thư mục temp; chạy ngoài sandbox đạt 149 passed, 14 skipped, 0 failed/error, không sửa code để né lỗi môi trường.
+- SDK import lỗi ArgsKwargs trong pydantic_core; cài lại dependency rồi đo lại. Giữ run lỗi 0/20 measured riêng với run hợp lệ.
+- Bộ chấm cũ sorted() danh sách dict bị TypeError; 2 test fail trước sửa, sau sửa cả 3 regression test pass. Không đổi case gốc.
+- CLI policy tiếng Việt không có kết quả: giới hạn retrieval local cần cải thiện, không che bằng routing 100%.
+- Chưa xác minh deploy v4/người ngoài nhóm thử UI; Telegram public; chưa xác minh commit kỹ thuật riêng của Hoàn. Các mục này còn mở trước nghiệm thu.
 
 ## 6. Tổng hợp đóng góp
 
-- Chi tiết đóng góp của từng thành viên nằm trong TEAM.md và các báo cáo cá nhân report/team/MSSV_HoTen.md.
+[Hoàng](2A202603952_NguyenPhiHoang.md): UI/session/confirmation/regression có commit 037d5f0. [Hoàn](2A202603972_NguyenCongHoan.md): xác minh được commit TEAM; phân công tool/bảng cần xác nhận thực tế. Chi tiết [TEAM.md](../../TEAM.md). Codex hỗ trợ code/báo cáo v4, không gán thay công cá nhân. Claude Code được khởi chạy review qua Herdr nhưng dừng tại prompt quyền, chưa có findings.
+
 ## 7. Hạn chế và hướng cải thiện — B6. Reflection
 
-- Fix thuộc `system_prompt.md`: không đoán dữ liệu thiếu, routing, no-tool boundary, xử lý dữ liệu không tin cậy và confirmation boundary.
-- Fix thuộc `tools.yaml`: điều kiện dùng/không dùng, chuẩn hóa query, handle, timeframe, search type, URL và `confirmed=true`.
-- Failure cần review thủ công: độ đúng của nội dung và nguồn web, chất lượng tóm tắt, policy injection và việc gửi Telegram ngoài ý muốn; routing/argument eval không chấm được các điểm này.
-- Nếu có thêm một vòng: thêm test riêng cho title fallback và item không có URL/title của `dedupe`, chạy full pytest sau khi cài dependency, rồi deploy public UI.
+- Prompt quyết định routing/scope/confirmation; declaration quy định cách dùng và args. Runtime UI cần khóa gửi độc lập vì tuân thủ prompt không phải cơ chế cấp quyền.
+- Eval đo lượt chọn tool, multi-turn là context gộp; không thay thế live loop, chất lượng nguồn, hallucination, prompt injection hay UX. Cần review thủ công và kiểm tra người dùng thật.
+- Một lượt đạt 100% không chứng minh ổn định qua nhiều lần/model. Vòng tiếp theo thử paraphrase, thiếu một mốc ngày, nhiều phép biến đổi nối tiếp và policy tiếng Việt; ghi metric thật kể cả giảm.
+- Hoàn thiện nghiệm thu public UI, phân công/commit cá nhân và điều kiện private channel trước khi kết luận đầy đủ CP1–CP5; local model hoãn.
 
 ## 8. Tài liệu tham khảo
 
-- [README.md](../../README.md)
-- [RUBRIC.md](../../RUBRIC.md)
-- [System prompt](../../starter_v0/artifacts/system_prompt.md)
-- [Tool declarations](../../starter_v0/artifacts/tools.yaml)
-- [Base/version log](../../starter_v0/artifacts/version_log.csv)
-- [Group eval](../../starter_v0/data/eval_group.json)
+- [CHECKPOINTS](../../CHECKPOINTS.md), [RULES](../../RULES.md), [RUBRIC](../../RUBRIC.md), [SUBMISSION](../../SUBMISSION.md).
+- [Tool authoring](../../starter_v0/tools/README.md), [README starter](../../starter_v0/README.md), [version log](../../starter_v0/artifacts/version_log.csv).
+- Source/run/transcript dẫn trực tiếp trong từng bảng; không dùng tài liệu capability làm bằng chứng kết quả đo.

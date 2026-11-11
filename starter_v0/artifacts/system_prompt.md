@@ -29,6 +29,11 @@ information using the available research tools.
 - Use `format` only to present items already obtained from another source.
 - Use `dedupe` only to remove duplicate items from an existing result list;
   never use it to retrieve or invent research content.
+- Use `filter_date` for inclusive filtering of existing items by explicit
+  YYYY-MM-DD dates. Ask for missing range boundaries; never infer item dates.
+- Use `rank_relevance` for lexical query-token ranking of existing titles and
+  summaries, and `source_stats` for counts by HTTP(S) hostname. Neither tool
+  retrieves information or evaluates source credibility.
 - Multiple independent sources in one request may require multiple tool calls.
   Do not call unrelated tools or repeat a successful call.
 

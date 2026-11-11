@@ -1,0 +1,53 @@
+{
+  "dataset_id": "aisafety_bonus_v1",
+  "dataset_role": "extension",
+  "description": "Independent offline-tool routing cases; original base, group and extension datasets are unchanged.",
+  "allowed_failure_types": ["wrong_tool", "wrong_arg_value", "missing_info"],
+  "cases": [
+    {
+      "id": "X01_filter_date", "phase": "B", "suite": "extension",
+      "query": "Lọc danh sách theo trường date từ 2024-02-01 đến 2024-02-29, gồm cả hai đầu mốc. Chỉ lọc, không tìm kiếm: [{\"title\":\"A\",\"date\":\"2024-02-29\"},{\"title\":\"B\",\"date\":\"2024-03-01\"}]",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "filter_date", "args": {"items": [{"title": "A", "date": "2024-02-29"}, {"title": "B", "date": "2024-03-01"}], "start_date": "2024-02-01", "end_date": "2024-02-29"}}]},
+      "metadata": {"what_it_tests": "Route to date filter and preserve explicit items and inclusive bounds."}
+    },
+    {
+      "id": "X02_rank_relevance", "phase": "B", "suite": "extension",
+      "query": "Xếp hạng mức liên quan theo từ khóa AI robotics, lấy 1 mục từ danh sách này, không tra cứu thêm: [{\"title\":\"AI\"},{\"title\":\"AI robotics\"}]",
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "rank_relevance", "args": {"items": [{"title": "AI"}, {"title": "AI robotics"}], "query": "AI robotics", "limit": 1}}]},
+      "metadata": {"what_it_tests": "Route to lexical ranking with exact query and positive limit."}
+    },
+    {
+      "id": "X03_source_stats", "phase": "B", "suite": "extension",
+      "query": "Đếm số mục theo hostname trong danh sách có sẵn, thống kê riêng URL thiếu/sai, không đánh giá uy tín: [{\"url\":\"https://EXAMPLE.com/a\"},{\"url\":\"http://example.com/b\"},{}]",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "source_stats", "args": {"items": [{"url": "https://EXAMPLE.com/a"}, {"url": "http://example.com/b"}, {}]}}]},
+      "metadata": {"what_it_tests": "Source distribution routes locally without fetching URLs."}
+    },
+    {
+      "id": "X04_filter_missing_range", "phase": "B", "suite": "extension",
+      "query": "Lọc theo khoảng ngày cho danh sách [{\"title\":\"A\",\"date\":\"2024-02-29\"}]. Tôi chưa chọn ngày bắt đầu và kết thúc.",
+      "failure_type": "missing_info",
+      "expect": {"tool_calls": [{"name": "clarify", "args": {"response_type": "text"}}]},
+      "metadata": {"what_it_tests": "Missing bounds require clarification, never inferred dates."}
+    },
+    {
+      "id": "X05_rank_followup", "phase": "B", "suite": "extension",
+      "turns": [
+        {"role": "user", "content": "Danh sách có sẵn: [{\"title\":\"AI\"},{\"title\":\"robotics\"}]. Tôi muốn xếp hạng theo từ khóa."},
+        {"role": "user", "content": "Từ khóa là robotics, lấy tối đa 2 mục, chỉ xếp hạng danh sách đã đưa."}
+      ],
+      "failure_type": "wrong_arg_value",
+      "expect": {"tool_calls": [{"name": "rank_relevance", "args": {"items": [{"title": "AI"}, {"title": "robotics"}], "query": "robotics", "limit": 2}}]},
+      "metadata": {"what_it_tests": "Carry existing items across turns while filling query and limit."}
+    },
+    {
+      "id": "X06_dedupe", "phase": "B", "suite": "extension",
+      "query": "Loại bỏ mục trùng, giữ bản đầu tiên: [{\"title\":\"AI\",\"url\":\"https://example.com/a\"},{\"title\":\"AI copy\",\"url\":\"https://example.com/a\"}]",
+      "failure_type": "wrong_tool",
+      "expect": {"tool_calls": [{"name": "dedupe", "args": {"items": [{"title": "AI", "url": "https://example.com/a"}, {"title": "AI copy", "url": "https://example.com/a"}]}}]},
+      "metadata": {"what_it_tests": "Existing dedupe routing remains available after three additional tools."}
+    }
+  ]
+}
